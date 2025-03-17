@@ -13,6 +13,13 @@ var db = builder.AddContainer("db", "mariadb:10.11")
     .WithEnvironment("MYSQL_DATABASE", "pimcore")
     .WithEnvironment("MYSQL_USER", "pimcore")
     .WithEnvironment("MYSQL_PASSWORD", "pimcore");
-    
+
+var php = builder.AddContainer("php", "pimcore/pimcore:php8.3-debug-latest")
+    .WithEnvironment("COMPOSER_HOME", "/var/www/html")
+    .WithEnvironment("PHP_IDE_CONFIG", "serverName=localhost")
+    .WithBindMount(Path.GetFullPath("."), "/var/www/html")
+    .WithVolume("pimcore-demo-tmp-storage", "/tmp")
+    //.WithContainerUser("851801118:851800513")
+    .WaitFor(db);
 
 builder.Build().Run();
