@@ -21,5 +21,11 @@ var php = builder.AddContainer("php", "pimcore/pimcore:php8.3-debug-latest")
     .WithVolume("pimcore-demo-tmp-storage", "/tmp")
     //.WithContainerUser("851801118:851800513")
     .WaitFor(db);
+var nginx = builder.AddContainer("nginx", "nginx:stable-alpine")
+    .WithEndpoint(targetPort:8081, port: 80, name: "web")
+    .WithBindMount(Path.GetFullPath("."), "/var/www/html", isReadOnly: true)
+    .WithBindMount(Path.GetFullPath("nginx.conf"), "/etc/nginx/conf.d/default.conf", isReadOnly: true)
+    .WithBindMount("/etc/nginx/conf.d", "/etc/nginx/conf.d", isReadOnly: false)
+    .WaitFor(php);
 
 builder.Build().Run();
